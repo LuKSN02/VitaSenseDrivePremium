@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaSense Drive — Premium Gestão de Frota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== TOKENS ===== */
+:root{
+  --bg:#070a13;
+  --bg-soft:#0c1120;
+  --bg-elev:#10172b;
+  --bg-card:#131b32;
+  --bg-card-hover:#161f3a;
+  --line:rgba(255,255,255,.08);
+  --line-strong:rgba(255,255,255,.14);
+  --blue:#3568e0;
+  --blue-bright:#5b8aff;
+  --blue-soft:rgba(91,138,255,.14);
+  --green:#33d499;
+  --green-soft:rgba(51,212,153,.14);
+  --amber:#f3b341;
+  --amber-soft:rgba(243,179,65,.14);
+  --red:#ef5466;
+  --red-soft:rgba(239,84,102,.14);
+  --purple:#a78bfa;
+  --purple-soft:rgba(167,139,250,.14);
+  --gold:#f59e0b;
+  --gold-soft:rgba(245,158,11,.14);
+  --text:#eef2fb;
+  --text-dim:#9aa6c4;
+  --text-faint:#5d6885;
+  --font-display:'Rajdhani',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:24px;
+  --shadow-glow:0 0 0 1px rgba(91,138,255,.15), 0 20px 60px -20px rgba(53,104,224,.35);
+  --shadow-gold:0 0 0 1px rgba(245,158,11,.2), 0 20px 60px -20px rgba(245,158,11,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--text);}
+ul{list-style:none;}
+:focus-visible{outline:2px solid var(--blue-bright);outline-offset:3px;border-radius:4px;}
+h1,h2,h3,h4,h5{font-family:var(--font-display);font-weight:600;letter-spacing:.01em;color:var(--text);}
+.mono{font-family:var(--font-mono);}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(7,10,19,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(155deg,var(--blue-bright),var(--blue) 60%, #1c3a8f);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:18px;color:#fff;
+  box-shadow:0 6px 18px -6px rgba(91,138,255,.6);
+}
+.brand-text b{font-family:var(--font-display);font-weight:700;font-size:16px;}
+.brand-text span{font-size:10px;letter-spacing:.18em;color:var(--text-faint);text-transform:uppercase;display:block;}
+
+.premium-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:999px;
+  background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.08));
+  border:1px solid rgba(245,158,11,.35);
+  color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+}
+.premium-badge svg{width:12px;height:12px;}
+
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.topbar-user{display:flex;align-items:center;gap:9px;font-size:13px;}
+.topbar-user .ua{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(140deg,var(--gold),#c97c0a);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:13px;color:#fff;
+}
+.topbar-notif{
+  width:34px;height:34px;border-radius:10px;background:var(--bg-card);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;
+}
+.notif-badge{
+  position:absolute;top:-2px;right:-2px;
+  width:16px;height:16px;border-radius:50%;background:var(--red);border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#fff;
+}
+
+/* ===== LAYOUT ===== */
+.layout{display:flex;height:calc(100vh - 64px);}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--bg-soft);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  padding:20px 0;
+  overflow-y:auto;
+}
+.sidebar-section{padding:0 12px;margin-bottom:6px;}
+.sidebar-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);font-weight:700;padding:0 8px;margin-bottom:6px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  font-size:13.5px;font-weight:500;color:var(--text-dim);
+  cursor:pointer;transition:.18s;margin-bottom:2px;
+  position:relative;
+}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7;}
+.nav-item:hover{background:var(--bg-card);color:var(--text);}
+.nav-item:hover svg{opacity:1;}
+.nav-item.active{background:var(--blue-soft);color:var(--blue-bright);font-weight:600;}
+.nav-item.active svg{opacity:1;}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;background:var(--blue-bright);border-radius:0 3px 3px 0;
+}
+.nav-badge{
+  margin-left:auto;background:var(--red-soft);color:var(--red);
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;
+}
+.sidebar-divider{height:1px;background:var(--line);margin:10px 20px;}
+.sidebar-bottom{padding:12px;margin-top:auto;}
+.fleet-summary{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px;
+}
+.fleet-summary .fs-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;}
+.fleet-stat{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.fleet-stat:last-child{margin-bottom:0;}
+.fleet-stat .fsl{font-size:12px;color:var(--text-dim);}
+.fleet-stat .fsv{font-family:var(--font-mono);font-size:13px;font-weight:700;}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg);}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px;}
+
+/* ===== TABS ===== */
+.tab-pane{display:none;}
+.tab-pane.active{display:block;animation:fadeIn .3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== PAGE HEADER ===== */
+.page-header{
+  padding:28px 28px 20px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(53,104,224,.1),transparent 60%);
+}
+.page-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.page-title{font-size:24px;line-height:1.1;margin-bottom:4px;}
+.page-subtitle{font-size:13px;color:var(--text-faint);}
+
+/* ===== BTN ===== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 20px;border-radius:999px;font-size:13.5px;font-weight:600;
+  transition:.18s;white-space:nowrap;cursor:pointer;border:none;
+}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:linear-gradient(135deg,var(--blue-bright),var(--blue));color:#fff;box-shadow:0 8px 20px -8px rgba(91,138,255,.7);}
+.btn-primary:hover{box-shadow:0 12px 24px -8px rgba(91,138,255,.85);transform:translateY(-1px);}
+.btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--text);}
+.btn-ghost:hover{border-color:var(--blue-bright);color:var(--blue-bright);}
+.btn-danger{background:linear-gradient(135deg,#ff6b78,var(--red));color:#fff;}
+.btn-green{background:linear-gradient(135deg,#3fedb0,var(--green));color:#0c1120;}
+.btn-amber{background:linear-gradient(135deg,#ffc84a,var(--amber));color:#0c1120;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.btn-block{width:100%;}
+.btn svg{width:15px;height:15px;}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:20px;
+}
+.card-title{
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.card-title .ct-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+/* ===== PILL ===== */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;
+  font-size:11px;font-weight:700;letter-spacing:.03em;
+}
+.pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;}
+.pill-green{background:var(--green-soft);color:var(--green);}
+.pill-amber{background:var(--amber-soft);color:var(--amber);}
+.pill-red{background:var(--red-soft);color:var(--red);}
+.pill-blue{background:var(--blue-soft);color:var(--blue-bright);}
+.pill-purple{background:var(--purple-soft);color:var(--purple);}
+
+/* ===== GAUGE ===== */
+.gauge-ring{
+  width:72px;height:72px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(var(--gauge-color,var(--green)) calc(var(--gauge-pct,20)*1%), rgba(255,255,255,.06) 0);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:background 1s ease;
+}
+.gauge-ring::before{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--bg-card);}
+.gauge-ring .gval{position:relative;z-index:1;font-family:var(--font-mono);font-weight:700;font-size:12px;}
+
+/* ===== EKG ===== */
+.ekg-strip{height:68px;background:rgba(0,0,0,.3);border-radius:10px;overflow:hidden;position:relative;}
+.ekg-strip svg{position:absolute;top:0;left:0;height:100%;width:200%;animation:ekgScroll 5.5s linear infinite;}
+.ekg-strip.warn svg{animation-duration:4s;}
+.ekg-strip.danger svg{animation-duration:2.5s;}
+@keyframes ekgScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.ekg-label{position:absolute;top:7px;left:10px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);z-index:2;}
+.ekg-bpm{position:absolute;bottom:7px;left:10px;font-family:var(--font-mono);font-size:17px;font-weight:700;z-index:2;}
+.ekg-bpm span{font-size:10px;color:var(--text-faint);font-family:var(--font-body);margin-left:2px;}
+
+/* ===== ======================== ===== */
+/* ===== ABA: MONITORAMENTO GERAL ===== */
+/* ===== ======================== ===== */
+.monitor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 28px;border-bottom:1px solid var(--line);}
+.kpi-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;transition:.2s;
+}
+.kpi-card:hover{border-color:rgba(255,255,255,.14);background:var(--bg-card-hover);}
+.kpi-label{font-size:11px;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.kpi-value{font-family:var(--font-mono);font-size:28px;font-weight:700;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:11.5px;color:var(--text-faint);}
+.kpi-card.kpi-green .kpi-value{color:var(--green);}
+.kpi-card.kpi-amber .kpi-value{color:var(--amber);}
+.kpi-card.kpi-red .kpi-value{color:var(--red);}
+.kpi-card.kpi-blue .kpi-value{color:var(--blue-bright);}
+
+.drivers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 28px;}
+
+/* Driver Card */
+.driver-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  overflow:hidden;transition:.2s;cursor:pointer;
+}
+.driver-card:hover{border-color:rgba(91,138,255,.3);box-shadow:var(--shadow-glow);}
+.driver-card.alert-warn{border-color:rgba(243,179,65,.4);}
+.driver-card.alert-danger{border-color:rgba(239,84,102,.5);animation:dangerPulse 2s ease-in-out infinite;}
+@keyframes dangerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,84,102,0);}50%{box-shadow:0 0 0 4px rgba(239,84,102,.2);}}
+
+.dc-top{
+  display:flex;align-items:center;gap:12px;padding:16px;
+  border-bottom:1px solid var(--line);
+}
+.dc-avatar{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:17px;color:#fff;
+  position:relative;
+}
+.dc-avatar .status-ring{
+  position:absolute;inset:-2px;border-radius:50%;
+  border:2px solid transparent;
+}
+.dc-avatar.ok .status-ring{border-color:var(--green);}
+.dc-avatar.warn .status-ring{border-color:var(--amber);}
+.dc-avatar.danger .status-ring{border-color:var(--red);}
+.dc-avatar.off .status-ring{border-color:var(--text-faint);}
+.dc-info{flex:1;min-width:0;}
+.dc-info h4{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.dc-info span{font-size:11.5px;color:var(--text-faint);}
+
+.dc-signals{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+.dc-signal{
+  background:var(--bg-card);padding:11px 14px;
+}
+.dc-signal .sig-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.dc-signal .sig-val{font-family:var(--font-mono);font-size:16px;font-weight:700;}
+.dc-signal .sig-val.ok{color:var(--green);}
+.dc-signal .sig-val.warn{color:var(--amber);}
+.dc-signal .sig-val.danger{color:var(--red);}
+.dc-signal .sig-val.dim{color:var(--text-faint);}
+
+.dc-ekg{padding:12px 14px;border-top:1px solid var(--line);}
+
+.dc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--text-faint);
+}
+.dc-footer .driving-since{display:flex;align-items:center;gap:5px;}
+.dc-footer svg{width:13px;height:13px;}
+
+/* ===== ======================== ===== */
+/* ===== ABA: SINAIS EM TEMPO REAL ===== */
+/* ===== ======================== ===== */
+.realtime-layout{display:grid;grid-template-columns:260px 1fr;height:100%;}
+.driver-list-panel{
+  border-right:1px solid var(--line);overflow-y:auto;
+  padding:16px 0;
+}
+.driver-list-panel::-webkit-scrollbar{width:4px;}
+.driver-list-panel::-webkit-scrollbar-thumb{background:var(--line-strong);}
+
+.dl-item{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  cursor:pointer;transition:.15s;border-left:3px solid transparent;
+}
+.dl-item:hover{background:var(--bg-card);}
+.dl-item.active{background:var(--blue-soft);border-left-color:var(--blue-bright);}
+.dl-item .dl-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:14px;color:#fff;
+}
+.dl-item .dl-name{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dl-item .dl-status{font-size:11px;color:var(--text-faint);margin-top:1px;}
+.dl-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor;}
+.dl-status-dot.ok{background:var(--green);color:var(--green);}
+.dl-status-dot.warn{background:var(--amber);color:var(--amber);}
+.dl-status-dot.danger{background:var(--red);color:var(--red);}
+.dl-status-dot.off{background:var(--text-faint);color:var(--text-faint);}
+
+.signals-panel{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:20px;}
+.signals-panel::-webkit-scrollbar{width:5px;}
+.signals-panel::-webkit-scrollbar-thumb{background:var(--line-strong);}
+
+.driver-detail-header{
+  display:flex;align-items:center;gap:16px;
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:18px 20px;
+}
+.ddh-avatar{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:22px;color:#fff;
+  position:relative;flex-shrink:0;
+}
+.ddh-avatar .live-ring{
+  position:absolute;inset:-3px;border-radius:50%;
+  border:2.5px solid var(--green);
+  animation:livePulse 2s ease-in-out infinite;
+}
+.ddh-avatar .live-ring.warn{border-color:var(--amber);}
+.ddh-avatar .live-ring.danger{border-color:var(--red);}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ddh-info h3{font-size:20px;margin-bottom:2px;}
+.ddh-info p{font-size:12.5px;color:var(--text-faint);}
+.ddh-status{margin-left:auto;text-align:right;}
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:999px;
+  background:var(--red-soft);color:var(--red);
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.live-badge .lb-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blinkDot 1s steps(2) infinite;}
+@keyframes blinkDot{to{opacity:0;}}
+
+.signals-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.signal-tile{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;text-align:center;
+}
+.signal-tile .st-icon{font-size:24px;margin-bottom:8px;}
+.signal-tile .st-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin-bottom:6px;}
+.signal-tile .st-val{font-family:var(--font-mono);font-size:28px;font-weight:700;line-height:1;margin-bottom:3px;}
+.signal-tile .st-unit{font-size:10.5px;color:var(--text-faint);}
+.signal-tile.ok .st-val{color:var(--green);}
+.signal-tile.warn .st-val{color:var(--amber);}
+.signal-tile.danger .st-val{color:var(--red);}
+.signal-tile.neutral .st-val{color:var(--blue-bright);}
+
+.ekg-full{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:18px 20px;
+}
+.ekg-full-strip{
+  height:90px;background:rgba(0,0,0,.4);border-radius:10px;overflow:hidden;position:relative;
+}
+.ekg-full-strip svg{position:absolute;top:0;left:0;height:100%;width:200%;animation:ekgScroll 5.5s linear infinite;}
+
+/* MAP */
+.map-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  overflow:hidden;
+}
+.map-header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.map-header h4{font-size:15px;}
+.fake-map{
+  height:260px;background:
+    linear-gradient(rgba(7,10,19,.6),rgba(7,10,19,.6)),
+    repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(91,138,255,.05) 30px, rgba(91,138,255,.05) 31px),
+    repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(91,138,255,.05) 30px, rgba(91,138,255,.05) 31px);
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.fake-map .map-route{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 300px 80px at 50% 60%, rgba(91,138,255,.08), transparent),
+    radial-gradient(ellipse 200px 50px at 30% 40%, rgba(51,212,153,.06), transparent);
+}
+.map-pin{
+  position:absolute;
+  display:flex;flex-direction:column;align-items:center;
+  animation:mapBounce 2s ease-in-out infinite;
+}
+@keyframes mapBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.map-pin-circle{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--blue-bright);
+  border:3px solid #fff;
+  box-shadow:0 0 0 6px rgba(91,138,255,.25),0 0 20px rgba(91,138,255,.5);
+}
+.map-pin-circle.warn{background:var(--amber);box-shadow:0 0 0 6px rgba(243,179,65,.25),0 0 20px rgba(243,179,65,.5);}
+.map-pin-circle.danger{background:var(--red);box-shadow:0 0 0 6px rgba(239,84,102,.25),0 0 20px rgba(239,84,102,.5);}
+.map-pin-label{
+  margin-top:5px;background:var(--bg-card);border:1px solid var(--line);
+  border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;
+}
+.map-coords{
+  position:absolute;bottom:14px;right:14px;
+  background:rgba(7,10,19,.9);border:1px solid var(--line);border-radius:8px;
+  padding:8px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);
+}
+.map-road-line{
+  position:absolute;width:60%;height:2px;background:linear-gradient(to right,transparent,rgba(91,138,255,.5),transparent);
+  top:55%;left:20%;transform:rotate(-8deg);
+}
+.map-road-line::after{
+  content:'';position:absolute;width:100%;height:100%;
+  background:linear-gradient(to right,transparent,rgba(91,138,255,.5),transparent);
+  animation:roadScan 3s linear infinite;
+}
+@keyframes roadScan{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+
+/* SLEEP */
+.sleep-bars{display:flex;gap:2px;align-items:flex-end;height:80px;}
+.sleep-bar{
+  flex:1;border-radius:4px 4px 0 0;min-height:6px;
+  transition:height .5s ease, background .5s ease;
+}
+.sleep-bar.deep{background:var(--blue);}
+.sleep-bar.light{background:var(--purple);}
+.sleep-bar.rem{background:var(--green);}
+.sleep-bar.awake{background:var(--line-strong);}
+.sleep-legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+.sleep-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-faint);}
+.sleep-leg-dot{width:8px;height:8px;border-radius:3px;}
+
+/* ===== ============================= ===== */
+/* ===== ABA: AUTORIZAÇÃO DE SAÍDA     ===== */
+/* ===== ============================= ===== */
+.auth-layout{padding:28px;display:grid;grid-template-columns:1fr 380px;gap:20px;}
+.auth-queue{display:flex;flex-direction:column;gap:12px;}
+.auth-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  overflow:hidden;transition:.2s;
+}
+.auth-card.pending{border-color:rgba(243,179,65,.3);}
+.auth-card.approved{border-color:rgba(51,212,153,.2);opacity:.7;}
+.auth-card.blocked{border-color:rgba(239,84,102,.3);}
+
+.auth-card-top{
+  display:flex;align-items:center;gap:14px;padding:16px 18px;
+  border-bottom:1px solid var(--line);
+}
+.auth-av{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:18px;color:#fff;
+}
+.auth-info h4{font-size:15px;font-weight:700;margin-bottom:1px;}
+.auth-info p{font-size:12px;color:var(--text-faint);}
+.auth-status-area{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+
+.auth-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);}
+.auth-vital{background:var(--bg-card);padding:10px 14px;text-align:center;}
+.auth-vital .av-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:4px;}
+.auth-vital .av-val{font-family:var(--font-mono);font-size:15px;font-weight:700;}
+.auth-vital .av-val.ok{color:var(--green);}
+.auth-vital .av-val.warn{color:var(--amber);}
+.auth-vital .av-val.danger{color:var(--red);}
+
+.auth-actions{display:flex;gap:10px;padding:14px 18px;}
+
+.auth-sidebar-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:20px;
+}
+.auth-sidebar-card h3{font-size:17px;margin-bottom:4px;}
+.auth-sidebar-card p{font-size:12.5px;color:var(--text-faint);margin-bottom:16px;}
+
+.auth-rule{
+  display:flex;align-items:flex-start;gap:12px;padding:12px;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  margin-bottom:8px;
+}
+.auth-rule-icon{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.auth-rule-text b{display:block;font-size:13px;margin-bottom:2px;}
+.auth-rule-text span{font-size:11.5px;color:var(--text-faint);}
+
+.auth-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px;}
+.auth-stat{
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  padding:12px;text-align:center;
+}
+.auth-stat .as-val{font-family:var(--font-mono);font-size:22px;font-weight:700;}
+.auth-stat .as-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+
+/* ===== ======================== ===== */
+/* ===== ABA: PSICÓLOGOS          ===== */
+/* ===== ======================== ===== */
+.psych-layout{padding:28px;display:grid;grid-template-columns:1fr 340px;gap:20px;}
+.psych-list{display:flex;flex-direction:column;gap:14px;}
+.psych-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:18px 20px;display:flex;gap:16px;align-items:flex-start;
+  transition:.2s;cursor:pointer;
+}
+.psych-card:hover{border-color:rgba(167,139,250,.35);box-shadow:0 0 0 1px rgba(167,139,250,.15);}
+.psych-av{
+  width:52px;height:52px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;
+}
+.psych-info{flex:1;min-width:0;}
+.psych-info h4{font-size:16px;margin-bottom:2px;}
+.psych-info .psych-crp{font-size:11.5px;color:var(--text-faint);margin-bottom:6px;}
+.psych-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.psych-tag{
+  font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:999px;
+  background:var(--purple-soft);color:var(--purple);
+}
+.psych-meta{display:flex;gap:14px;font-size:12px;color:var(--text-faint);}
+.psych-meta span{display:flex;align-items:center;gap:4px;}
+.psych-meta svg{width:13px;height:13px;}
+.psych-avail{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+.psych-rating{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:4px;}
+.btn-schedule{
+  padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;
+  background:linear-gradient(135deg,#c4b5fd,var(--purple));color:#fff;
+  transition:.18s;
+}
+.btn-schedule:hover{transform:translateY(-1px);}
+
+.psych-sidebar{display:flex;flex-direction:column;gap:14px;}
+.psych-sidebar-card{
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:18px;
+}
+.sessions-list{display:flex;flex-direction:column;gap:8px;}
+.session-item{
+  display:flex;align-items:center;gap:12px;padding:11px 12px;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;
+}
+.session-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.session-info{flex:1;min-width:0;}
+.session-info b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.session-info span{font-size:11.5px;color:var(--text-faint);}
+.session-time{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);white-space:nowrap;}
+
+.mental-chart{margin-top:14px;}
+.mental-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mental-label{font-size:12px;color:var(--text-dim);width:120px;flex-shrink:0;}
+.mental-track{flex:1;height:6px;background:var(--line-strong);border-radius:999px;overflow:hidden;}
+.mental-fill{height:100%;border-radius:999px;transition:width 1s ease;}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease both;}
+.modal-box{
+  background:var(--bg-card);border:1px solid var(--line-strong);
+  border-radius:var(--radius-lg);padding:28px;
+  width:460px;max-width:calc(100vw - 32px);
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.8);
+  animation:modalPop .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes modalPop{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+.modal-box h3{font-size:20px;margin-bottom:8px;}
+.modal-box p{font-size:13.5px;color:var(--text-dim);margin-bottom:20px;line-height:1.6;}
+.modal-actions{display:flex;gap:10px;}
+.modal-actions .btn{flex:1;}
+.modal-field{margin-bottom:12px;}
+.modal-field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:5px;}
+.modal-field input,.modal-field select,.modal-field textarea{
+  width:100%;background:var(--bg);border:1px solid var(--line-strong);
+  border-radius:10px;padding:10px 14px;color:var(--text);transition:.2s;
+}
+.modal-field input:focus,.modal-field select:focus,.modal-field textarea:focus{border-color:var(--blue-bright);outline:none;}
+.modal-field textarea{resize:vertical;min-height:80px;}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--bg-card);border:1px solid var(--line-strong);border-radius:12px;
+  padding:12px 18px;font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 10px 40px -10px rgba(0,0,0,.6);
+  opacity:0;transform:translateY(10px);transition:opacity .3s, transform .3s;
+  z-index:400;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast .toast-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ===== DIVIDER ===== */
+.divider{height:1px;background:var(--line);margin:16px 0;}
+.row-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);}
+.row-item:last-child{border-bottom:none;}
+.row-item .rl{font-size:13px;color:var(--text-dim);}
+.row-item .rv{font-family:var(--font-mono);font-size:13px;font-weight:600;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1200px){
+  .drivers-grid{grid-template-columns:1fr 1fr;}
+  .monitor-grid{grid-template-columns:1fr 1fr;}
+  .auth-layout,.psych-layout{grid-template-columns:1fr;}
+}
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .signals-row{grid-template-columns:1fr 1fr;}
+  .realtime-layout{grid-template-columns:1fr;}
+  .driver-list-panel{border-right:none;border-bottom:1px solid var(--line);height:160px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">V</div>
+    <div class="brand-text">
+      <b>VitaSense Drive</b>
+      <span>Gestão de Frota</span>
+    </div>
+  </div>
+  <div class="premium-badge">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+    Premium
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-notif" onclick="showToast('3 novos alertas de atenção.','amber')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-badge">3</div>
+    </div>
+    <div class="topbar-user">
+      <div class="ua">G</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2;">
+        <b style="font-size:13px;">Gestor Silva</b>
+        <span style="font-size:11px;color:var(--text-faint);">Admin</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Painel</div>
+      <div class="nav-item active" onclick="switchTab('visao-geral',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão Geral
+      </div>
+      <div class="nav-item" onclick="switchTab('sinais',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Sinais em Tempo Real
+        <span class="nav-badge">2</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('autorizacao',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Autorização de Saída
+        <span class="nav-badge">4</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('psicologos',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Psicólogos
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Configurações</div>
+      <div class="nav-item" onclick="showToast('Em desenvolvimento.','blue')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Relatórios
+      </div>
+      <div class="nav-item" onclick="showToast('Em desenvolvimento.','blue')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M16.24 7.76a6 6 0 0 1 0 8.49M12 20a8 8 0 0 1 0-16"/></svg>
+        Dispositivos
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="fleet-summary">
+        <div class="fs-title">Frota Hoje</div>
+        <div class="fleet-stat">
+          <span class="fsl">Em rota</span>
+          <span class="fsv" style="color:var(--blue-bright);">7</span>
+        </div>
+        <div class="fleet-stat">
+          <span class="fsl">Com alerta</span>
+          <span class="fsv" style="color:var(--amber);">2</span>
+        </div>
+        <div class="fleet-stat">
+          <span class="fsl">SOS ativo</span>
+          <span class="fsv" style="color:var(--red);">0</span>
+        </div>
+        <div class="fleet-stat">
+          <span class="fsl">Descansando</span>
+          <span class="fsv" style="color:var(--green);">5</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ===== ABA: VISÃO GERAL ===== -->
+    <div class="tab-pane active" id="tab-visao-geral">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h2 class="page-title">Visão Geral da Frota</h2>
+            <p class="page-subtitle">Sexta-feira, 26 de junho de 2026 — Atualizado agora</p>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Relatório exportado.','blue')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Lista atualizada.','green')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Atualizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="monitor-grid">
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-label">Motoristas Ativos</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-sub">de 12 cadastrados</div>
+        </div>
+        <div class="kpi-card kpi-green">
+          <div class="kpi-label">Seguro</div>
+          <div class="kpi-value">5</div>
+          <div class="kpi-sub">sinais normais</div>
+        </div>
+        <div class="kpi-card kpi-amber">
+          <div class="kpi-label">Atenção</div>
+          <div class="kpi-value">2</div>
+          <div class="kpi-sub">fadiga detectada</div>
+        </div>
+        <div class="kpi-card kpi-red">
+          <div class="kpi-label">Emergência</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-sub">nenhum SOS ativo</div>
+        </div>
+      </div>
+
+      <!-- Driver Cards -->
+      <div class="drivers-grid">
+
+        <!-- Driver 1 - OK -->
+        <div class="driver-card" onclick="openDriverModal('Carlos Mendes','ok')">
+          <div class="dc-top">
+            <div class="dc-avatar ok" style="background:linear-gradient(140deg,#5b8aff,#3568e0);">
+              C<div class="status-ring"></div>
+            </div>
+            <div class="dc-info">
+              <h4>Carlos Mendes</h4>
+              <span>SP-001 · Rota Campinas</span>
+            </div>
+            <span class="pill pill-green"><span class="dot"></span>Seguro</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal">
+              <div class="sig-label">BPM</div>
+              <div class="sig-val ok" id="bpm-c1">72</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">Fadiga</div>
+              <div class="sig-val ok">15%</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">SpO₂</div>
+              <div class="sig-val ok">98%</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">Direção</div>
+              <div class="sig-val ok">2h14</div>
+            </div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,36 L60,36 L70,36 L75,20 L80,52 L85,8 L90,60 L95,36 L120,36 L130,36 L135,22 L140,50 L145,10 L150,58 L155,36 L200,36 L210,36 L215,20 L220,52 L225,8 L230,60 L235,36 L260,36 L270,36 L275,22 L280,50 L285,10 L290,58 L295,36 L340,36 L350,36 L355,20 L360,52 L365,8 L370,60 L375,36 L400,36 L410,36 L415,22 L420,50 L425,10 L430,58 L435,36 L480,36 L490,36 L495,20 L500,52 L505,8 L510,60 L515,36 L540,36 L550,36 L555,22 L560,50 L565,10 L570,58 L575,36 L620,36 L630,36 L635,20 L640,52 L645,8 L650,60 L655,36 L680,36 L690,36 L695,22 L700,50 L705,10 L710,58 L715,36 L760,36 L770,36 L775,20 L780,52 L785,8 L790,60 L795,36 L800,36"
+                  fill="none" stroke="#33d499" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="dc-footer">
+            <span class="driving-since">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Dirigindo há 2h14
+            </span>
+            <span style="color:var(--green);">● Online</span>
+          </div>
+        </div>
+
+        <!-- Driver 2 - WARN -->
+        <div class="driver-card alert-warn" onclick="openDriverModal('Ricardo Alves','warn')">
+          <div class="dc-top">
+            <div class="dc-avatar warn" style="background:linear-gradient(140deg,#f3b341,#c97c0a);">
+              R<div class="status-ring"></div>
+            </div>
+            <div class="dc-info">
+              <h4>Ricardo Alves</h4>
+              <span>SP-003 · Rota Ribeirão</span>
+            </div>
+            <span class="pill pill-amber"><span class="dot"></span>Atenção</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal">
+              <div class="sig-label">BPM</div>
+              <div class="sig-val warn" id="bpm-c2">88</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">Fadiga</div>
+              <div class="sig-val warn">58%</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">SpO₂</div>
+              <div class="sig-val ok">97%</div>
+            </div>
+            <div class="dc-signal">
+              <div class="sig-label">Direção</div>
+              <div class="sig-val warn">3h42</div>
+            </div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip warn">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,36 L50,36 L55,36 L58,26 L61,46 L64,12 L67,58 L70,36 L90,36 L95,36 L98,24 L101,48 L104,8 L107,62 L110,36 L140,36 L145,36 L148,26 L151,46 L154,12 L157,58 L160,36 L180,36 L185,36 L188,24 L191,48 L194,8 L197,62 L200,36 L230,36 L235,36 L238,26 L241,46 L244,12 L247,58 L250,36 L270,36 L275,36 L278,24 L281,48 L284,8 L287,62 L290,36 L320,36 L325,36 L328,26 L331,46 L334,12 L337,58 L340,36 L360,36 L365,36 L368,24 L371,48 L374,8 L377,62 L380,36 L410,36 L415,36 L418,26 L421,46 L424,12 L427,58 L430,36 L450,36 L455,36 L458,24 L461,48 L464,8 L467,62 L470,36 L500,36 L505,36 L508,26 L511,46 L514,12 L517,58 L520,36 L540,36 L545,36 L548,24 L551,48 L554,8 L557,62 L560,36 L590,36 L595,36 L598,26 L601,46 L604,12 L607,58 L610,36 L630,36 L635,36 L638,24 L641,48 L644,8 L647,62 L650,36 L680,36 L685,36 L688,26 L691,46 L694,12 L697,58 L700,36 L720,36 L725,36 L728,24 L731,48 L734,8 L737,62 L740,36 L770,36 L775,36 L778,26 L781,46 L784,12 L787,58 L790,36 L800,36"
+                  fill="none" stroke="#f3b341" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="dc-footer">
+            <span class="driving-since">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ⚠ Recomendado pausar
+            </span>
+            <span style="color:var(--amber);">● Atenção</span>
+          </div>
+        </div>
+
+        <!-- Driver 3 - OK -->
+        <div class="driver-card" onclick="openDriverModal('Fernanda Costa','ok')">
+          <div class="dc-top">
+            <div class="dc-avatar ok" style="background:linear-gradient(140deg,#a78bfa,#7c3aed);">
+              F<div class="status-ring"></div>
+            </div>
+            <div class="dc-info">
+              <h4>Fernanda Costa</h4>
+              <span>SP-005 · Rota Santos</span>
+            </div>
+            <span class="pill pill-green"><span class="dot"></span>Seguro</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal"><div class="sig-label">BPM</div><div class="sig-val ok" id="bpm-c3">68</div></div>
+            <div class="dc-signal"><div class="sig-label">Fadiga</div><div class="sig-val ok">12%</div></div>
+            <div class="dc-signal"><div class="sig-label">SpO₂</div><div class="sig-val ok">99%</div></div>
+            <div class="dc-signal"><div class="sig-label">Direção</div><div class="sig-val ok">1h08</div></div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none"><path d="M0,36 L60,36 L70,36 L75,20 L80,52 L85,8 L90,60 L95,36 L120,36 L130,36 L135,22 L140,50 L145,10 L150,58 L155,36 L200,36 L210,36 L215,20 L220,52 L225,8 L230,60 L235,36 L260,36 L270,36 L275,22 L280,50 L285,10 L290,58 L295,36 L340,36 L350,36 L355,20 L360,52 L365,8 L370,60 L375,36 L400,36 L410,36 L415,22 L420,50 L425,10 L430,58 L435,36 L480,36 L490,36 L495,20 L500,52 L505,8 L510,60 L515,36 L540,36 L550,36 L555,22 L560,50 L565,10 L570,58 L575,36 L620,36 L630,36 L635,20 L640,52 L645,8 L650,60 L655,36 L700,36 L710,36 L715,22 L720,50 L725,10 L730,58 L735,36 L760,36 L770,36 L775,20 L780,52 L785,8 L790,60 L795,36 L800,36" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="dc-footer">
+            <span class="driving-since"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Dirigindo há 1h08</span>
+            <span style="color:var(--green);">● Online</span>
+          </div>
+        </div>
+
+        <!-- Driver 4 - WARN -->
+        <div class="driver-card alert-warn" onclick="openDriverModal('Paulo Rodrigues','warn')">
+          <div class="dc-top">
+            <div class="dc-avatar warn" style="background:linear-gradient(140deg,#f59e0b,#92400e);">
+              P<div class="status-ring"></div>
+            </div>
+            <div class="dc-info">
+              <h4>Paulo Rodrigues</h4>
+              <span>SP-007 · Rota BH</span>
+            </div>
+            <span class="pill pill-amber"><span class="dot"></span>Atenção</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal"><div class="sig-label">BPM</div><div class="sig-val warn" id="bpm-c4">94</div></div>
+            <div class="dc-signal"><div class="sig-label">Fadiga</div><div class="sig-val warn">71%</div></div>
+            <div class="dc-signal"><div class="sig-label">SpO₂</div><div class="sig-val ok">96%</div></div>
+            <div class="dc-signal"><div class="sig-label">Direção</div><div class="sig-val danger">5h11</div></div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip warn">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none"><path d="M0,36 L50,36 L55,36 L58,26 L61,46 L64,12 L67,58 L70,36 L90,36 L95,36 L98,24 L101,48 L104,8 L107,62 L110,36 L140,36 L145,36 L148,26 L151,46 L154,12 L157,58 L160,36 L180,36 L185,36 L188,24 L191,48 L194,8 L197,62 L200,36 L230,36 L235,36 L238,26 L241,46 L244,12 L247,58 L250,36 L270,36 L275,36 L278,24 L281,48 L284,8 L287,62 L290,36 L320,36 L325,36 L328,26 L331,46 L334,12 L337,58 L340,36 L360,36 L365,36 L368,24 L371,48 L374,8 L377,62 L380,36 L410,36 L415,36 L418,26 L421,46 L424,12 L427,58 L430,36 L450,36 L455,36 L458,24 L461,48 L464,8 L467,62 L470,36 L500,36 L505,36 L508,26 L511,46 L514,12 L517,58 L520,36 L540,36 L545,36 L548,24 L551,48 L554,8 L557,62 L560,36 L590,36 L595,36 L598,26 L601,46 L604,12 L607,58 L610,36 L630,36 L635,36 L638,24 L641,48 L644,8 L647,62 L650,36 L680,36 L685,36 L688,26 L691,46 L694,12 L697,58 L700,36 L720,36 L725,36 L728,24 L731,48 L734,8 L737,62 L740,36 L770,36 L775,36 L778,26 L781,46 L784,12 L787,58 L790,36 L800,36" fill="none" stroke="#f3b341" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="dc-footer">
+            <span style="color:var(--amber);">⚠ 5h+ em rota — pausa urgente</span>
+            <span style="color:var(--amber);">● Atenção</span>
+          </div>
+        </div>
+
+        <!-- Driver 5 - OK -->
+        <div class="driver-card">
+          <div class="dc-top">
+            <div class="dc-avatar ok" style="background:linear-gradient(140deg,#33d499,#059669);">
+              M<div class="status-ring"></div>
+            </div>
+            <div class="dc-info"><h4>Marcos Lima</h4><span>SP-009 · Rota Interior</span></div>
+            <span class="pill pill-green"><span class="dot"></span>Seguro</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal"><div class="sig-label">BPM</div><div class="sig-val ok">75</div></div>
+            <div class="dc-signal"><div class="sig-label">Fadiga</div><div class="sig-val ok">9%</div></div>
+            <div class="dc-signal"><div class="sig-label">SpO₂</div><div class="sig-val ok">98%</div></div>
+            <div class="dc-signal"><div class="sig-label">Direção</div><div class="sig-val ok">0h47</div></div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none"><path d="M0,36 L60,36 L70,36 L75,20 L80,52 L85,8 L90,60 L95,36 L180,36 L190,36 L195,20 L200,52 L205,8 L210,60 L215,36 L300,36 L310,36 L315,20 L320,52 L325,8 L330,60 L335,36 L420,36 L430,36 L435,20 L440,52 L445,8 L450,60 L455,36 L540,36 L550,36 L555,20 L560,52 L565,8 L570,60 L575,36 L660,36 L670,36 L675,20 L680,52 L685,8 L690,60 L695,36 L780,36 L790,36 L795,20 L800,36" fill="none" stroke="#33d499" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="dc-footer"><span>Dirigindo há 0h47</span><span style="color:var(--green);">● Online</span></div>
+        </div>
+
+        <!-- Driver 6 - OFF -->
+        <div class="driver-card" style="opacity:.55;">
+          <div class="dc-top">
+            <div class="dc-avatar off" style="background:linear-gradient(140deg,#5d6885,#374151);">
+              J<div class="status-ring"></div>
+            </div>
+            <div class="dc-info"><h4>Juliana Ferreira</h4><span>SP-011 · Descansando</span></div>
+            <span class="pill" style="background:rgba(93,104,133,.15);color:var(--text-faint);"><span class="dot" style="background:var(--text-faint);box-shadow:none;"></span>Offline</span>
+          </div>
+          <div class="dc-signals">
+            <div class="dc-signal"><div class="sig-label">BPM</div><div class="sig-val dim">—</div></div>
+            <div class="dc-signal"><div class="sig-label">Fadiga</div><div class="sig-val dim">—</div></div>
+            <div class="dc-signal"><div class="sig-label">SpO₂</div><div class="sig-val dim">—</div></div>
+            <div class="dc-signal"><div class="sig-label">Dormiu</div><div class="sig-val ok">7h30</div></div>
+          </div>
+          <div class="dc-ekg">
+            <div class="ekg-strip" style="opacity:.3;">
+              <div class="ekg-label">ECG</div>
+              <svg viewBox="0 0 800 72" preserveAspectRatio="none"><line x1="0" y1="36" x2="800" y2="36" stroke="#5d6885" stroke-width="1.5"/></svg>
+            </div>
+          </div>
+          <div class="dc-footer"><span>Próxima saída: 08:00</span><span style="color:var(--text-faint);">● Offline</span></div>
+        </div>
+
+      </div><!-- /drivers-grid -->
+    </div>
+
+    <!-- ===== ABA: SINAIS EM TEMPO REAL ===== -->
+    <div class="tab-pane" id="tab-sinais">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h2 class="page-title">Sinais em Tempo Real</h2>
+            <p class="page-subtitle">Monitoramento contínuo · Localização GPS · Histórico de sono</p>
+          </div>
+          <div class="live-badge" style="display:inline-flex;">
+            <div class="lb-dot"></div>
+            AO VIVO
+          </div>
+        </div>
+      </div>
+
+      <div class="realtime-layout" style="height:calc(100vh - 180px);">
+        <!-- Driver list -->
+        <div class="driver-list-panel">
+          <div style="padding:10px 16px 6px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);">Motoristas Ativos</div>
+          <div class="dl-item active" onclick="selectDriver('carlos',this)">
+            <div class="dl-av" style="background:linear-gradient(140deg,#5b8aff,#3568e0);">C</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dl-name">Carlos Mendes</div>
+              <div class="dl-status">SP-001 · Campinas</div>
+            </div>
+            <div class="dl-status-dot ok"></div>
+          </div>
+          <div class="dl-item" onclick="selectDriver('ricardo',this)">
+            <div class="dl-av" style="background:linear-gradient(140deg,#f3b341,#c97c0a);">R</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dl-name">Ricardo Alves</div>
+              <div class="dl-status">SP-003 · Ribeirão</div>
+            </div>
+            <div class="dl-status-dot warn"></div>
+          </div>
+          <div class="dl-item" onclick="selectDriver('fernanda',this)">
+            <div class="dl-av" style="background:linear-gradient(140deg,#a78bfa,#7c3aed);">F</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dl-name">Fernanda Costa</div>
+              <div class="dl-status">SP-005 · Santos</div>
+            </div>
+            <div class="dl-status-dot ok"></div>
+          </div>
+          <div class="dl-item" onclick="selectDriver('paulo',this)">
+            <div class="dl-av" style="background:linear-gradient(140deg,#f59e0b,#92400e);">P</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dl-name">Paulo Rodrigues</div>
+              <div class="dl-status">SP-007 · Belo Horizonte</div>
+            </div>
+            <div class="dl-status-dot warn"></div>
+          </div>
+          <div class="dl-item" onclick="selectDriver('marcos',this)">
+            <div class="dl-av" style="background:linear-gradient(140deg,#33d499,#059669);">M</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dl-name">Marcos Lima</div>
+              <div class="dl-status">SP-009 · Interior</div>
+            </div>
+            <div class="dl-status-dot ok"></div>
+          </div>
+        </div>
+
+        <!-- Signals detail -->
+        <div class="signals-panel">
+
+          <!-- Header do motorista selecionado -->
+          <div class="driver-detail-header" id="rt-header">
+            <div class="ddh-avatar" style="background:linear-gradient(140deg,#5b8aff,#3568e0);">
+              C
+              <div class="live-ring"></div>
+            </div>
+            <div class="ddh-info">
+              <h3 id="rt-name">Carlos Mendes</h3>
+              <p id="rt-route">SP-001 · Rota Campinas · Iniciou às 07:30</p>
+            </div>
+            <div class="ddh-status">
+              <div class="live-badge" style="background:var(--green-soft);color:var(--green);">
+                <div class="lb-dot" style="background:var(--green);"></div>
+                SEGURO
+              </div>
+              <div style="font-size:12px;color:var(--text-faint);">Último sync: agora</div>
+            </div>
+          </div>
+
+          <!-- Sinais principais (idênticos aos do site) -->
+          <div class="signals-row">
+            <div class="signal-tile ok">
+              <div class="st-icon">❤️</div>
+              <div class="st-label">Freq. Cardíaca</div>
+              <div class="st-val" id="rt-bpm">72</div>
+              <div class="st-unit">bpm</div>
+            </div>
+            <div class="signal-tile neutral">
+              <div class="st-icon">⏱️</div>
+              <div class="st-label">Tempo em Rota</div>
+              <div class="st-val" id="rt-tempo">02:14</div>
+              <div class="st-unit">hh:mm</div>
+            </div>
+            <div class="signal-tile ok">
+              <div class="st-icon">🩸</div>
+              <div class="st-label">SpO₂</div>
+              <div class="st-val" id="rt-spo2">98</div>
+              <div class="st-unit">%</div>
+            </div>
+            <div class="signal-tile ok">
+              <div class="st-icon">😵</div>
+              <div class="st-label">Índice Fadiga</div>
+              <div class="st-val" id="rt-fadiga">15</div>
+              <div class="st-unit">%</div>
+            </div>
+          </div>
+
+          <!-- ECG Completo -->
+          <div class="ekg-full">
+            <div class="card-title" style="margin-bottom:12px;">
+              <span class="ct-dot" style="color:var(--green);"></span>
+              Eletrocardiograma em tempo real
+              <span class="live-badge" style="margin-left:auto;font-size:10px;">● AO VIVO</span>
+            </div>
+            <div class="ekg-full-strip" id="rt-ekg-strip">
+              <svg viewBox="0 0 800 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,45 L60,45 L70,45 L75,25 L80,65 L85,5 L90,75 L95,45 L120,45 L130,45 L135,27 L140,63 L145,7 L150,72 L155,45 L200,45 L210,45 L215,25 L220,65 L225,5 L230,75 L235,45 L260,45 L270,45 L275,27 L280,63 L285,7 L290,72 L295,45 L340,45 L350,45 L355,25 L360,65 L365,5 L370,75 L375,45 L400,45 L410,45 L415,27 L420,63 L425,7 L430,72 L435,45 L480,45 L490,45 L495,25 L500,65 L505,5 L510,75 L515,45 L540,45 L550,45 L555,27 L560,63 L565,7 L570,72 L575,45 L620,45 L630,45 L635,25 L640,65 L645,5 L650,75 L655,45 L680,45 L690,45 L695,27 L700,63 L705,7 L710,72 L715,45 L760,45 L770,45 L775,25 L780,65 L785,5 L790,75 L795,45 L800,45"
+                  fill="none" stroke="#33d499" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="rt-ekg-path"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Mapa + Sono lado a lado -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+            <!-- Localização GPS -->
+            <div class="map-card">
+              <div class="map-header">
+                <h4>📍 Localização GPS</h4>
+                <span class="pill pill-blue" id="rt-location-status"><span class="dot"></span>SP → Campinas</span>
+              </div>
+              <div class="fake-map">
+                <div class="map-route"></div>
+                <div class="map-road-line"></div>
+                <div class="map-pin" id="rt-pin" style="top:40%;left:45%;">
+                  <div class="map-pin-circle"></div>
+                  <div class="map-pin-label" id="rt-pin-label">Carlos</div>
+                </div>
+                <div class="map-coords" id="rt-coords">-23.1842° S, -46.9017° O</div>
+              </div>
+              <div style="padding:12px 16px;display:flex;flex-direction:column;gap:6px;">
+                <div class="row-item"><span class="rl">Velocidade atual</span><span class="rv" id="rt-speed">87 km/h</span></div>
+                <div class="row-item"><span class="rl">Próxima pausa</span><span class="rv" style="color:var(--green);" id="rt-pausa">em 1h46</span></div>
+                <div class="row-item"><span class="rl">Km percorridos</span><span class="rv" id="rt-km">98 km</span></div>
+              </div>
+            </div>
+
+            <!-- Sono -->
+            <div class="card">
+              <div class="card-title"><span class="ct-dot" style="color:var(--purple);"></span>Sono da Última Noite</div>
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+                <div>
+                  <div style="font-family:var(--font-mono);font-size:32px;font-weight:700;color:var(--text);" id="rt-sleep-total">7h14</div>
+                  <div style="font-size:11.5px;color:var(--text-faint);" id="rt-sleep-quality">Boa qualidade</div>
+                </div>
+                <div class="gauge-ring" id="rt-sleep-gauge" style="--gauge-pct:90;--gauge-color:var(--green);">
+                  <span class="gval" id="rt-sleep-pct">90%</span>
+                </div>
+              </div>
+              <div class="sleep-bars" id="rt-sleep-bars">
+                <!-- Filled by JS -->
+              </div>
+              <div class="sleep-legend">
+                <div class="sleep-leg-item"><div class="sleep-leg-dot" style="background:var(--blue);"></div>Profundo</div>
+                <div class="sleep-leg-item"><div class="sleep-leg-dot" style="background:var(--purple);"></div>Leve</div>
+                <div class="sleep-leg-item"><div class="sleep-leg-dot" style="background:var(--green);"></div>REM</div>
+                <div class="sleep-leg-item"><div class="sleep-leg-dot" style="background:rgba(255,255,255,.12);"></div>Acordado</div>
+              </div>
+              <div class="divider"></div>
+              <div class="row-item"><span class="rl">Horário de dormir</span><span class="rv" id="rt-sleep-start">22:45</span></div>
+              <div class="row-item"><span class="rl">Horário de acordar</span><span class="rv" id="rt-sleep-end">06:00</span></div>
+              <div class="row-item"><span class="rl">Interrupções</span><span class="rv" id="rt-sleep-int">2</span></div>
+              <div class="row-item" style="border-bottom:none;">
+                <span class="rl">Recomendação</span>
+                <span class="pill pill-green" id="rt-sleep-rec" style="font-size:10px;">Apto para dirigir</span>
+              </div>
+            </div>
+
+          </div><!-- /grid -->
+
+        </div><!-- /signals-panel -->
+      </div><!-- /realtime-layout -->
+    </div>
+
+    <!-- ===== ABA: AUTORIZAÇÃO DE SAÍDA ===== -->
+    <div class="tab-pane" id="tab-autorizacao">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h2 class="page-title">Autorização de Saída</h2>
+            <p class="page-subtitle">Aprovação baseada em sinais biométricos e qualidade do sono</p>
+          </div>
+          <span class="pill pill-amber"><span class="dot"></span>4 aguardando</span>
+        </div>
+      </div>
+
+      <div class="auth-layout">
+        <div class="auth-queue">
+
+          <!-- PENDING 1 -->
+          <div class="auth-card pending" id="auth-card-1">
+            <div class="auth-card-top">
+              <div class="auth-av" style="background:linear-gradient(140deg,#5b8aff,#3568e0);">C</div>
+              <div class="auth-info">
+                <h4>Carlos Mendes</h4>
+                <p>SP-001 · Saída planejada 07:30 → Campinas (320 km)</p>
+              </div>
+              <div class="auth-status-area">
+                <span class="pill pill-amber"><span class="dot"></span>Aguardando</span>
+                <span style="font-size:11px;color:var(--text-faint);">Solicitado 07:15</span>
+              </div>
+            </div>
+            <div class="auth-vitals">
+              <div class="auth-vital"><div class="av-label">BPM</div><div class="av-val ok">71</div></div>
+              <div class="auth-vital"><div class="av-label">SpO₂</div><div class="av-val ok">98%</div></div>
+              <div class="auth-vital"><div class="av-label">Sono</div><div class="av-val ok">7h14</div></div>
+              <div class="auth-vital"><div class="av-label">Fadiga pré</div><div class="av-val ok">8%</div></div>
+            </div>
+            <div class="auth-actions">
+              <button class="btn btn-green" onclick="approveAuth(1,'Carlos Mendes')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Autorizar Saída
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Nota adicionada.','blue')">Adicionar nota</button>
+            </div>
+          </div>
+
+          <!-- PENDING 2 - WARN -->
+          <div class="auth-card pending" id="auth-card-2">
+            <div class="auth-card-top">
+              <div class="auth-av" style="background:linear-gradient(140deg,#a78bfa,#7c3aed);">F</div>
+              <div class="auth-info">
+                <h4>Fernanda Costa</h4>
+                <p>SP-005 · Saída planejada 08:00 → Santos (80 km)</p>
+              </div>
+              <div class="auth-status-area">
+                <span class="pill pill-amber"><span class="dot"></span>Aguardando</span>
+                <span style="font-size:11px;color:var(--text-faint);">Solicitado 07:45</span>
+              </div>
+            </div>
+            <div class="auth-vitals">
+              <div class="auth-vital"><div class="av-label">BPM</div><div class="av-val ok">68</div></div>
+              <div class="auth-vital"><div class="av-label">SpO₂</div><div class="av-val ok">99%</div></div>
+              <div class="auth-vital"><div class="av-label">Sono</div><div class="av-val warn">5h40</div></div>
+              <div class="auth-vital"><div class="av-label">Fadiga pré</div><div class="av-val warn">22%</div></div>
+            </div>
+            <div style="background:var(--amber-soft);border-top:1px solid rgba(243,179,65,.2);padding:10px 18px;font-size:12.5px;color:var(--amber);display:flex;align-items:center;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Sono abaixo do recomendado (min. 6h). Recomenda-se avaliação antes da saída.
+            </div>
+            <div class="auth-actions">
+              <button class="btn btn-amber" onclick="approveAuth(2,'Fernanda Costa')">Autorizar mesmo assim</button>
+              <button class="btn btn-danger btn-sm" onclick="blockAuth(2,'Fernanda Costa')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Bloquear
+              </button>
+            </div>
+          </div>
+
+          <!-- PENDING 3 -->
+          <div class="auth-card pending" id="auth-card-3">
+            <div class="auth-card-top">
+              <div class="auth-av" style="background:linear-gradient(140deg,#33d499,#059669);">M</div>
+              <div class="auth-info">
+                <h4>Marcos Lima</h4>
+                <p>SP-009 · Saída planejada 08:30 → Interior SP (150 km)</p>
+              </div>
+              <div class="auth-status-area">
+                <span class="pill pill-amber"><span class="dot"></span>Aguardando</span>
+                <span style="font-size:11px;color:var(--text-faint);">Solicitado 08:10</span>
+              </div>
+            </div>
+            <div class="auth-vitals">
+              <div class="auth-vital"><div class="av-label">BPM</div><div class="av-val ok">74</div></div>
+              <div class="auth-vital"><div class="av-label">SpO₂</div><div class="av-val ok">98%</div></div>
+              <div class="auth-vital"><div class="av-label">Sono</div><div class="av-val ok">8h02</div></div>
+              <div class="auth-vital"><div class="av-label">Fadiga pré</div><div class="av-val ok">5%</div></div>
+            </div>
+            <div class="auth-actions">
+              <button class="btn btn-green" onclick="approveAuth(3,'Marcos Lima')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                Autorizar Saída
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Nota adicionada.','blue')">Adicionar nota</button>
+            </div>
+          </div>
+
+          <!-- PENDING 4 - DANGER -->
+          <div class="auth-card" style="border-color:rgba(239,84,102,.5);" id="auth-card-4">
+            <div class="auth-card-top">
+              <div class="auth-av" style="background:linear-gradient(140deg,#ef5466,#c41230);">J</div>
+              <div class="auth-info">
+                <h4>João Carvalho</h4>
+                <p>SP-013 · Saída planejada 09:00 → Uberlândia (560 km)</p>
+              </div>
+              <div class="auth-status-area">
+                <span class="pill pill-red"><span class="dot"></span>Crítico</span>
+                <span style="font-size:11px;color:var(--text-faint);">Solicitado 08:40</span>
+              </div>
+            </div>
+            <div class="auth-vitals">
+              <div class="auth-vital"><div class="av-label">BPM</div><div class="av-val warn">101</div></div>
+              <div class="auth-vital"><div class="av-label">SpO₂</div><div class="av-val ok">97%</div></div>
+              <div class="auth-vital"><div class="av-label">Sono</div><div class="av-val danger">3h20</div></div>
+              <div class="auth-vital"><div class="av-label">Fadiga pré</div><div class="av-val danger">61%</div></div>
+            </div>
+            <div style="background:var(--red-soft);border-top:1px solid rgba(239,84,102,.2);padding:10px 18px;font-size:12.5px;color:var(--red);display:flex;align-items:center;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Alto risco detectado. Sono inferior a 4h + fadiga elevada. Saída não recomendada.
+            </div>
+            <div class="auth-actions">
+              <button class="btn btn-danger" onclick="blockAuth(4,'João Carvalho')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                Bloquear Saída
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="scheduleSession('João Carvalho')">Agendar psicólogo</button>
+            </div>
+          </div>
+
+        </div><!-- /auth-queue -->
+
+        <!-- Sidebar de regras -->
+        <div>
+          <div class="auth-sidebar-card" style="margin-bottom:14px;">
+            <h3>Critérios de Autorização</h3>
+            <p>Parâmetros automáticos do sistema para liberar saída.</p>
+
+            <div class="auth-rule">
+              <div class="auth-rule-icon" style="background:var(--green-soft);">😴</div>
+              <div class="auth-rule-text">
+                <b>Sono mínimo</b>
+                <span>6 horas na noite anterior à viagem</span>
+              </div>
+            </div>
+            <div class="auth-rule">
+              <div class="auth-rule-icon" style="background:var(--blue-soft);">❤️</div>
+              <div class="auth-rule-text">
+                <b>Frequência cardíaca</b>
+                <span>Entre 55 e 100 bpm em repouso</span>
+              </div>
+            </div>
+            <div class="auth-rule">
+              <div class="auth-rule-icon" style="background:var(--amber-soft);">😵</div>
+              <div class="auth-rule-text">
+                <b>Índice de fadiga</b>
+                <span>Abaixo de 30% antes da partida</span>
+              </div>
+            </div>
+            <div class="auth-rule">
+              <div class="auth-rule-icon" style="background:var(--purple-soft);">🩸</div>
+              <div class="auth-rule-text">
+                <b>SpO₂</b>
+                <span>Acima de 95% de saturação</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="auth-sidebar-card">
+            <h3>Resumo do Dia</h3>
+            <div class="auth-stats-row">
+              <div class="auth-stat">
+                <div class="as-val" style="color:var(--green);">8</div>
+                <div class="as-label">Aprovadas</div>
+              </div>
+              <div class="auth-stat">
+                <div class="as-val" style="color:var(--amber);">2</div>
+                <div class="as-label">Com ressalva</div>
+              </div>
+              <div class="auth-stat">
+                <div class="as-val" style="color:var(--red);">1</div>
+                <div class="as-label">Bloqueadas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /auth-layout -->
+    </div>
+
+    <!-- ===== ABA: PSICÓLOGOS ===== -->
+    <div class="tab-pane" id="tab-psicologos">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h2 class="page-title">Suporte Psicológico</h2>
+            <p class="page-subtitle">Profissionais especializados em saúde do trabalhador e fadiga ocupacional</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openScheduleModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Sessão
+          </button>
+        </div>
+      </div>
+
+      <div class="psych-layout">
+        <div class="psych-list">
+
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title"><span class="ct-dot" style="color:var(--purple);"></span>Psicólogos Parceiros</div>
+
+            <!-- Psicólogo 1 -->
+            <div class="psych-card" onclick="openScheduleModalFor('Dra. Ana Lima')">
+              <div class="psych-av" style="background:linear-gradient(140deg,#c4b5fd,#7c3aed);">A</div>
+              <div class="psych-info">
+                <h4>Dra. Ana Lima</h4>
+                <div class="psych-crp">CRP 06/142.387 · Psicologia do Trabalho</div>
+                <div class="psych-tags">
+                  <span class="psych-tag">Fadiga Ocupacional</span>
+                  <span class="psych-tag">Saúde Mental</span>
+                  <span class="psych-tag">Transtorno do Sono</span>
+                </div>
+                <div class="psych-meta">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Online</span>
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Próximo horário: hoje 14h</span>
+                </div>
+              </div>
+              <div class="psych-avail">
+                <div class="psych-rating">★ 4.9</div>
+                <span class="pill pill-green" style="font-size:10px;"><span class="dot"></span>Disponível</span>
+                <button class="btn-schedule" onclick="event.stopPropagation();openScheduleModalFor('Dra. Ana Lima')">Agendar</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Psicólogo 2 -->
+            <div class="psych-card" onclick="openScheduleModalFor('Dr. Roberto Faria')">
+              <div class="psych-av" style="background:linear-gradient(140deg,#5b8aff,#3568e0);">R</div>
+              <div class="psych-info">
+                <h4>Dr. Roberto Faria</h4>
+                <div class="psych-crp">CRP 06/88.921 · Neuropsicologia</div>
+                <div class="psych-tags">
+                  <span class="psych-tag">Estresse Crônico</span>
+                  <span class="psych-tag">Ansiedade</span>
+                  <span class="psych-tag">Cognição e Atenção</span>
+                </div>
+                <div class="psych-meta">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Presencial / Online</span>
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Próximo horário: amanhã 10h</span>
+                </div>
+              </div>
+              <div class="psych-avail">
+                <div class="psych-rating">★ 4.8</div>
+                <span class="pill pill-blue" style="font-size:10px;"><span class="dot"></span>Limitado</span>
+                <button class="btn-schedule" onclick="event.stopPropagation();openScheduleModalFor('Dr. Roberto Faria')">Agendar</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Psicólogo 3 -->
+            <div class="psych-card" onclick="openScheduleModalFor('Dra. Camila Reis')">
+              <div class="psych-av" style="background:linear-gradient(140deg,#f59e0b,#92400e);">C</div>
+              <div class="psych-info">
+                <h4>Dra. Camila Reis</h4>
+                <div class="psych-crp">CRP 06/201.554 · Psicologia Clínica e Organizacional</div>
+                <div class="psych-tags">
+                  <span class="psych-tag">Burnout</span>
+                  <span class="psych-tag">Gestão de Conflitos</span>
+                  <span class="psych-tag">Qualidade de Vida</span>
+                </div>
+                <div class="psych-meta">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Online</span>
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Próximo horário: seg 09h</span>
+                </div>
+              </div>
+              <div class="psych-avail">
+                <div class="psych-rating">★ 4.7</div>
+                <span class="pill pill-green" style="font-size:10px;"><span class="dot"></span>Disponível</span>
+                <button class="btn-schedule" onclick="event.stopPropagation();openScheduleModalFor('Dra. Camila Reis')">Agendar</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Histórico / Bem-estar da frota -->
+          <div class="card" style="margin-top:16px;">
+            <div class="card-title"><span class="ct-dot" style="color:var(--amber);"></span>Índice de Bem-estar da Frota</div>
+            <div class="mental-chart">
+              <div class="mental-row">
+                <span class="mental-label">Estresse médio</span>
+                <div class="mental-track"><div class="mental-fill" style="width:38%;background:var(--green);"></div></div>
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--green);margin-left:10px;">38%</span>
+              </div>
+              <div class="mental-row">
+                <span class="mental-label">Qualidade do sono</span>
+                <div class="mental-track"><div class="mental-fill" style="width:72%;background:var(--blue-bright);"></div></div>
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--blue-bright);margin-left:10px;">72%</span>
+              </div>
+              <div class="mental-row">
+                <span class="mental-label">Fadiga acumulada</span>
+                <div class="mental-track"><div class="mental-fill" style="width:45%;background:var(--amber);"></div></div>
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--amber);margin-left:10px;">45%</span>
+              </div>
+              <div class="mental-row">
+                <span class="mental-label">Índice geral</span>
+                <div class="mental-track"><div class="mental-fill" style="width:78%;background:var(--green);"></div></div>
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--green);margin-left:10px;">78%</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /psych-list -->
+
+        <!-- Sidebar: sessões agendadas -->
+        <div class="psych-sidebar">
+          <div class="psych-sidebar-card">
+            <div class="card-title" style="margin-bottom:12px;"><span class="ct-dot" style="color:var(--purple);"></span>Sessões Agendadas</div>
+            <div class="sessions-list">
+              <div class="session-item">
+                <div class="session-dot" style="background:var(--amber);box-shadow:0 0 5px var(--amber);"></div>
+                <div class="session-info">
+                  <b>Ricardo Alves</b>
+                  <span>Dra. Ana Lima · Online</span>
+                </div>
+                <div class="session-time">Hoje 15h</div>
+              </div>
+              <div class="session-item">
+                <div class="session-dot" style="background:var(--red);box-shadow:0 0 5px var(--red);"></div>
+                <div class="session-info">
+                  <b>João Carvalho</b>
+                  <span>Dr. Roberto Faria · Online</span>
+                </div>
+                <div class="session-time">Hoje 16h</div>
+              </div>
+              <div class="session-item">
+                <div class="session-dot" style="background:var(--blue-bright);box-shadow:0 0 5px var(--blue-bright);"></div>
+                <div class="session-info">
+                  <b>Paulo Rodrigues</b>
+                  <span>Dra. Camila Reis · Online</span>
+                </div>
+                <div class="session-time">Amanhã 10h</div>
+              </div>
+              <div class="session-item">
+                <div class="session-dot" style="background:var(--green);box-shadow:0 0 5px var(--green);"></div>
+                <div class="session-info">
+                  <b>Fernanda Costa</b>
+                  <span>Dra. Ana Lima · Online</span>
+                </div>
+                <div class="session-time">Seg 14h</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="psych-sidebar-card">
+            <div class="card-title" style="margin-bottom:10px;"><span class="ct-dot" style="color:var(--red);"></span>Atenção Prioritária</div>
+            <p style="font-size:12.5px;color:var(--text-faint);margin-bottom:12px;">Motoristas com indicadores que sugerem avaliação psicológica urgente.</p>
+            <div class="sessions-list">
+              <div class="session-item" style="border-color:rgba(239,84,102,.25);">
+                <div class="auth-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,#ef5466,#c41230);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;color:#fff;flex-shrink:0;">J</div>
+                <div class="session-info">
+                  <b>João Carvalho</b>
+                  <span style="color:var(--red);">Sono 3h20 · Fadiga 61%</span>
+                </div>
+                <button class="btn-schedule" style="font-size:11px;padding:5px 10px;" onclick="scheduleSession('João Carvalho')">Agendar</button>
+              </div>
+              <div class="session-item" style="border-color:rgba(243,179,65,.2);">
+                <div class="auth-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,#f59e0b,#92400e);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;color:#fff;flex-shrink:0;">P</div>
+                <div class="session-info">
+                  <b>Paulo Rodrigues</b>
+                  <span style="color:var(--amber);">Fadiga 71% · 5h+ em rota</span>
+                </div>
+                <button class="btn-schedule" style="font-size:11px;padding:5px 10px;" onclick="scheduleSession('Paulo Rodrigues')">Agendar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="psych-sidebar-card">
+            <div class="card-title" style="margin-bottom:10px;"><span class="ct-dot" style="color:var(--green);"></span>Resumo do Mês</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--purple);">18</div>
+                <div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;">Sessões</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--green);">9</div>
+                <div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;">Motoristas</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--amber);">3</div>
+                <div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;">Críticos</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--gold);">★4.8</div>
+                <div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;">Avaliação</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /psych-sidebar -->
+      </div><!-- /psych-layout -->
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== DRIVER MODAL ===== -->
+<div class="modal-overlay" id="driverModal">
+  <div class="modal-box">
+    <h3 id="modal-driver-name">Carlos Mendes</h3>
+    <p id="modal-driver-desc">SP-001 · Rota Campinas · Sinais estáveis</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--text-faint);margin-bottom:4px;">BPM ATUAL</div>
+        <div style="font-family:var(--font-mono);font-size:22px;font-weight:700;" id="modal-bpm">72</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--text-faint);margin-bottom:4px;">FADIGA</div>
+        <div style="font-family:var(--font-mono);font-size:22px;font-weight:700;" id="modal-fadiga">15%</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="switchTab('sinais',null);closeModal('driverModal')">Ver Sinais</button>
+      <button class="btn btn-ghost" onclick="closeModal('driverModal')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCHEDULE MODAL ===== -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal-box">
+    <h3>Agendar Sessão</h3>
+    <p id="schedule-modal-desc">Selecione o motorista e o horário disponível.</p>
+    <div class="modal-field">
+      <label>Motorista</label>
+      <select id="schedule-driver">
+        <option>Carlos Mendes</option>
+        <option>Ricardo Alves</option>
+        <option>Fernanda Costa</option>
+        <option>Paulo Rodrigues</option>
+        <option>Marcos Lima</option>
+        <option>João Carvalho</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Psicólogo</label>
+      <select id="schedule-psych">
+        <option>Dra. Ana Lima</option>
+        <option>Dr. Roberto Faria</option>
+        <option>Dra. Camila Reis</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Data e horário</label>
+      <input type="datetime-local" id="schedule-datetime">
+    </div>
+    <div class="modal-field">
+      <label>Observação</label>
+      <textarea placeholder="Motivo da sessão ou contexto relevante..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="confirmSchedule()">Confirmar Agendamento</button>
+      <button class="btn btn-ghost" onclick="closeModal('scheduleModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl">
+  <div class="toast-dot" id="toastDot" style="background:var(--blue-bright);"></div>
+  <span id="toastMsg">—</span>
+</div>
+
+<script>
+/* ===== NAV ===== */
+function switchTab(tabId, el) {
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pane = document.getElementById('tab-' + tabId);
+  if(pane) pane.classList.add('active');
+  if(el) el.classList.add('active');
+  if(tabId === 'sinais') initSleepBars(currentDriver);
+}
+
+/* ===== TOAST ===== */
+let toastTimer = null;
+function showToast(msg, type='blue') {
+  const el = document.getElementById('toastEl');
+  const dot = document.getElementById('toastDot');
+  const msgEl = document.getElementById('toastMsg');
+  const map = {blue:'var(--blue-bright)',green:'var(--green)',amber:'var(--amber)',red:'var(--red)',purple:'var(--purple)'};
+  dot.style.background = map[type] || map.blue;
+  msgEl.textContent = msg;
+  el.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ===== MODALS ===== */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openDriverModal(name, status) {
+  document.getElementById('modal-driver-name').textContent = name;
+  const statusText = status === 'ok' ? 'Sinais estáveis — em rota' : 'Atenção — fadiga detectada';
+  document.getElementById('modal-driver-desc').textContent = statusText;
+  document.getElementById('modal-bpm').textContent = status === 'ok' ? '72' : '91';
+  document.getElementById('modal-bpm').style.color = status === 'ok' ? 'var(--green)' : 'var(--amber)';
+  document.getElementById('modal-fadiga').textContent = status === 'ok' ? '15%' : '63%';
+  document.getElementById('modal-fadiga').style.color = status === 'ok' ? 'var(--green)' : 'var(--amber)';
+  openModal('driverModal');
+}
+
+function openScheduleModal() {
+  document.getElementById('schedule-modal-desc').textContent = 'Selecione o motorista e o horário disponível.';
+  document.getElementById('schedule-psych').value = 'Dra. Ana Lima';
+  openModal('scheduleModal');
+}
+
+function openScheduleModalFor(psych) {
+  document.getElementById('schedule-modal-desc').textContent = 'Agendando sessão com ' + psych + '.';
+  document.getElementById('schedule-psych').value = psych;
+  openModal('scheduleModal');
+}
+
+function scheduleSession(driverName) {
+  document.getElementById('schedule-driver').value = driverName;
+  document.getElementById('schedule-modal-desc').textContent = 'Sessão de suporte para ' + driverName + '.';
+  openModal('scheduleModal');
+}
+
+function confirmSchedule() {
+  closeModal('scheduleModal');
+  showToast('Sessão agendada com sucesso!', 'purple');
+}
+
+/* ===== AUTHORIZATION ===== */
+function approveAuth(id, name) {
+  const card = document.getElementById('auth-card-' + id);
+  if(!card) return;
+  card.classList.remove('pending');
+  card.classList.add('approved');
+  card.style.pointerEvents = 'none';
+  const statusArea = card.querySelector('.auth-status-area');
+  if(statusArea) statusArea.innerHTML = '<span class="pill pill-green"><span class="dot"></span>Autorizado</span>';
+  const actions = card.querySelector('.auth-actions');
+  if(actions) actions.innerHTML = '<span style="font-size:12px;color:var(--green);">✓ Saída autorizada pelo gestor</span>';
+  showToast(name + ' — saída autorizada.', 'green');
+}
+
+function blockAuth(id, name) {
+  const card = document.getElementById('auth-card-' + id);
+  if(!card) return;
+  card.classList.remove('pending');
+  card.classList.add('blocked');
+  card.style.pointerEvents = 'none';
+  const statusArea = card.querySelector('.auth-status-area');
+  if(statusArea) statusArea.innerHTML = '<span class="pill pill-red"><span class="dot"></span>Bloqueado</span>';
+  const actions = card.querySelector('.auth-actions');
+  if(actions) actions.innerHTML = '<span style="font-size:12px;color:var(--red);">✗ Saída bloqueada pelo sistema</span>';
+  showToast(name + ' — saída bloqueada.', 'red');
+}
+
+/* ===== REAL-TIME SIGNALS ===== */
+const driverData = {
+  carlos: {
+    name:'Carlos Mendes', route:'SP-001 · Rota Campinas · Iniciou às 07:30',
+    color:'linear-gradient(140deg,#5b8aff,#3568e0)', initial:'C',
+    status:'ok', statusText:'SEGURO', statusColor:'var(--green)',
+    bpmBase:[68,78], spo2Base:[97,99], fadiga:15, tempo:'02:14',
+    speed:87, km:98, pausa:'em 1h46',
+    coords:'-23.1842° S, -46.9017° O', location:'SP → Campinas',
+    pinTop:'40%',pinLeft:'45%',pinClass:'',
+    sleepTotal:'7h14',sleepPct:90,sleepQuality:'Boa qualidade',
+    sleepStart:'22:45',sleepEnd:'06:00',sleepInt:2,sleepRec:'Apto para dirigir',
+    sleepData:[{type:'light',h:20},{type:'deep',h:60},{type:'rem',h:40},{type:'deep',h:65},{type:'light',h:30},{type:'rem',h:50},{type:'light',h:25},{type:'awake',h:8},{type:'deep',h:55},{type:'rem',h:45},{type:'light',h:35},{type:'deep',h:50}]
+  },
+  ricardo: {
+    name:'Ricardo Alves', route:'SP-003 · Rota Ribeirão Preto · Iniciou às 05:15',
+    color:'linear-gradient(140deg,#f3b341,#c97c0a)', initial:'R',
+    status:'warn', statusText:'ATENÇÃO', statusColor:'var(--amber)',
+    bpmBase:[84,96], spo2Base:[96,98], fadiga:58, tempo:'03:42',
+    speed:92, km:210, pausa:'AGORA',
+    coords:'-21.5890° S, -47.0308° O', location:'SP → Ribeirão',
+    pinTop:'35%',pinLeft:'55%',pinClass:'warn',
+    sleepTotal:'5h20',sleepPct:60,sleepQuality:'Qualidade ruim',
+    sleepStart:'01:30',sleepEnd:'06:50',sleepInt:5,sleepRec:'Atenção',
+    sleepData:[{type:'awake',h:15},{type:'light',h:25},{type:'deep',h:30},{type:'light',h:20},{type:'awake',h:12},{type:'light',h:28},{type:'rem',h:22},{type:'awake',h:10},{type:'light',h:20},{type:'deep',h:25},{type:'light',h:18},{type:'awake',h:8}]
+  },
+  fernanda: {
+    name:'Fernanda Costa', route:'SP-005 · Rota Santos · Iniciou às 09:00',
+    color:'linear-gradient(140deg,#a78bfa,#7c3aed)', initial:'F',
+    status:'ok', statusText:'SEGURO', statusColor:'var(--green)',
+    bpmBase:[64,72], spo2Base:[98,99], fadiga:12, tempo:'01:08',
+    speed:78, km:45, pausa:'em 2h52',
+    coords:'-23.9543° S, -46.3337° O', location:'SP → Santos',
+    pinTop:'55%',pinLeft:'40%',pinClass:'',
+    sleepTotal:'5h40',sleepPct:65,sleepQuality:'Regular',
+    sleepStart:'00:20',sleepEnd:'06:00',sleepInt:3,sleepRec:'Atenção',
+    sleepData:[{type:'light',h:20},{type:'deep',h:40},{type:'light',h:25},{type:'rem',h:35},{type:'awake',h:15},{type:'light',h:28},{type:'deep',h:32},{type:'rem',h:25},{type:'light',h:18},{type:'awake',h:10},{type:'light',h:22},{type:'deep',h:30}]
+  },
+  paulo: {
+    name:'Paulo Rodrigues', route:'SP-007 · Rota Belo Horizonte · Iniciou às 05:00',
+    color:'linear-gradient(140deg,#f59e0b,#92400e)', initial:'P',
+    status:'warn', statusText:'ATENÇÃO', statusColor:'var(--amber)',
+    bpmBase:[90,100], spo2Base:[95,97], fadiga:71, tempo:'05:11',
+    speed:96, km:380, pausa:'AGORA',
+    coords:'-19.9191° S, -43.9386° O', location:'SP → Belo Horizonte',
+    pinTop:'30%',pinLeft:'50%',pinClass:'warn',
+    sleepTotal:'4h55',sleepPct:50,sleepQuality:'Insuficiente',
+    sleepStart:'01:00',sleepEnd:'05:55',sleepInt:6,sleepRec:'Risco elevado',
+    sleepData:[{type:'awake',h:20},{type:'light',h:20},{type:'deep',h:25},{type:'awake',h:18},{type:'light',h:22},{type:'rem',h:18},{type:'awake',h:15},{type:'light',h:20},{type:'deep',h:20},{type:'awake',h:12},{type:'light',h:15},{type:'awake',h:8}]
+  },
+  marcos: {
+    name:'Marcos Lima', route:'SP-009 · Rota Interior SP · Iniciou às 09:30',
+    color:'linear-gradient(140deg,#33d499,#059669)', initial:'M',
+    status:'ok', statusText:'SEGURO', statusColor:'var(--green)',
+    bpmBase:[70,78], spo2Base:[97,99], fadiga:9, tempo:'00:47',
+    speed:82, km:55, pausa:'em 3h13',
+    coords:'-22.5829° S, -47.4046° O', location:'SP → Interior',
+    pinTop:'45%',pinLeft:'48%',pinClass:'',
+    sleepTotal:'8h02',sleepPct:95,sleepQuality:'Excelente',
+    sleepStart:'22:00',sleepEnd:'06:02',sleepInt:1,sleepRec:'Apto para dirigir',
+    sleepData:[{type:'light',h:15},{type:'deep',h:70},{type:'rem',h:55},{type:'deep',h:65},{type:'rem',h:50},{type:'light',h:20},{type:'deep',h:60},{type:'rem',h:45},{type:'light',h:18},{type:'deep',h:55},{type:'rem',h:48},{type:'light',h:12}]
+  }
+};
+
+let currentDriver = 'carlos';
+let rtInterval = null;
+
+function selectDriver(id, el) {
+  currentDriver = id;
+  document.querySelectorAll('.dl-item').forEach(i => i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  updateRTPanel(id);
+}
+
+function updateRTPanel(id) {
+  const d = driverData[id];
+  if(!d) return;
+
+  // Header
+  document.getElementById('rt-name').textContent = d.name;
+  document.getElementById('rt-route').textContent = d.route;
+  const header = document.getElementById('rt-header');
+  header.querySelector('.ddh-avatar').style.background = d.color;
+  header.querySelector('.ddh-avatar').childNodes[0].textContent = d.initial;
+  const liveRing = header.querySelector('.live-ring');
+  liveRing.className = 'live-ring' + (d.status !== 'ok' ? ' ' + d.status : '');
+  header.querySelector('.live-badge').style.background = d.status === 'ok' ? 'var(--green-soft)' : 'var(--amber-soft)';
+  header.querySelector('.live-badge').style.color = d.statusColor;
+  header.querySelector('.live-badge').innerHTML = `<div class="lb-dot" style="background:${d.statusColor};animation:blinkDot 1s steps(2) infinite;"></div> ${d.statusText}`;
+
+  // Signals
+  const fadeClass = d.status === 'ok' ? 'ok' : d.fadiga > 70 ? 'danger' : 'warn';
+  document.getElementById('rt-bpm').className = 'st-val ' + (d.status === 'ok' ? 'ok' : 'warn');
+  document.getElementById('rt-spo2').className = 'st-val ok';
+  document.getElementById('rt-fadiga').className = 'st-val ' + fadeClass;
+  document.getElementById('rt-fadiga').textContent = d.fadiga;
+  document.getElementById('rt-tempo').textContent = d.tempo;
+
+  // EKG color
+  const ekgPath = document.getElementById('rt-ekg-path');
+  ekgPath.setAttribute('stroke', d.status === 'ok' ? '#33d499' : '#f3b341');
+
+  // Map
+  document.getElementById('rt-location-status').innerHTML = `<span class="dot"></span>${d.location}`;
+  const pin = document.getElementById('rt-pin');
+  pin.style.top = d.pinTop;
+  pin.style.left = d.pinLeft;
+  pin.querySelector('.map-pin-circle').className = 'map-pin-circle' + (d.pinClass ? ' ' + d.pinClass : '');
+  document.getElementById('rt-pin-label').textContent = d.initial;
+  document.getElementById('rt-coords').textContent = d.coords;
+  document.getElementById('rt-speed').textContent = d.speed + ' km/h';
+  document.getElementById('rt-km').textContent = d.km + ' km';
+  document.getElementById('rt-pausa').textContent = d.pausa;
+  document.getElementById('rt-pausa').style.color = d.pausa === 'AGORA' ? 'var(--red)' : 'var(--green)';
+
+  // Sleep
+  document.getElementById('rt-sleep-total').textContent = d.sleepTotal;
+  document.getElementById('rt-sleep-quality').textContent = d.sleepQuality;
+  document.getElementById('rt-sleep-pct').textContent = d.sleepPct + '%';
+  document.getElementById('rt-sleep-gauge').style.setProperty('--gauge-pct', d.sleepPct);
+  document.getElementById('rt-sleep-gauge').style.setProperty('--gauge-color', d.sleepPct >= 80 ? 'var(--green)' : d.sleepPct >= 60 ? 'var(--amber)' : 'var(--red)');
+  document.getElementById('rt-sleep-start').textContent = d.sleepStart;
+  document.getElementById('rt-sleep-end').textContent = d.sleepEnd;
+  document.getElementById('rt-sleep-int').textContent = d.sleepInt;
+  const recEl = document.getElementById('rt-sleep-rec');
+  recEl.textContent = d.sleepRec;
+  recEl.className = 'pill ' + (d.sleepPct >= 80 ? 'pill-green' : d.sleepPct >= 60 ? 'pill-amber' : 'pill-red');
+
+  initSleepBars(id);
+}
+
+function initSleepBars(id) {
+  const d = driverData[id];
+  if(!d) return;
+  const container = document.getElementById('rt-sleep-bars');
+  if(!container) return;
+  container.innerHTML = '';
+  d.sleepData.forEach(s => {
+    const bar = document.createElement('div');
+    bar.className = 'sleep-bar ' + s.type;
+    bar.style.height = s.h + '%';
+    container.appendChild(bar);
+  });
+}
+
+/* Real-time BPM tick */
+function startRTTick() {
+  if(rtInterval) clearInterval(rtInterval);
+  rtInterval = setInterval(() => {
+    const d = driverData[currentDriver];
+    if(!d) return;
+    const [min,max] = d.bpmBase;
+    const bpm = Math.round(min + Math.random() * (max - min));
+    document.getElementById('rt-bpm').textContent = bpm;
+    // also update bpm in grid cards
+    Object.keys(driverData).forEach((k,i) => {
+      const [mn,mx] = driverData[k].bpmBase;
+      const el = document.getElementById('bpm-c' + (i+1));
+      if(el) el.textContent = Math.round(mn + Math.random() * (mx - mn));
+    });
+  }, 1500);
+}
+
+/* ===== INIT ===== */
+window.addEventListener('DOMContentLoaded', () => {
+  updateRTPanel('carlos');
+  startRTTick();
+  // Set default datetime for schedule modal
+  const now = new Date();
+  now.setHours(now.getHours() + 2, 0);
+  const fmt = now.toISOString().slice(0,16);
+  const dtInput = document.getElementById('schedule-datetime');
+  if(dtInput) dtInput.value = fmt;
+});
+</script>
+</body>
+</html>
